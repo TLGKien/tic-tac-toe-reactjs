@@ -2,8 +2,10 @@ import React from "react";
 import ReactDOM from "react-dom/client";
 import "./index.css";
 
+//============================================
 // Squares component, click -> tick 'x' or 'o'
 // when winning -> highlight
+//============================================
 function Square(props) {
   const winningSquareStyle = {
     backgroundColor: '#ccc'
@@ -17,7 +19,11 @@ function Square(props) {
   );
 }
 
+// ===============
+// Board component
+// ===============
 class Board extends React.Component {
+  // render a Square
   renderSquare(i) {
     let winningSquare = this.props.winningSquares && this.props.winningSquares.includes(i) ? true : false;
     return <Square 
@@ -29,6 +35,7 @@ class Board extends React.Component {
 
   render() {
     let squares = [];
+    // draw squares includes 9 square
     for (let i = 0; i < 3; i++){
       let row = [];
       for (let j = 0; j < 3; j++){
@@ -42,6 +49,9 @@ class Board extends React.Component {
   }
 }
 
+// ====================================================================
+// Game component include a board and information about game, history,..
+// ====================================================================
 class Game extends React.Component {
   constructor(props){
     super(props);
@@ -50,12 +60,14 @@ class Game extends React.Component {
         squares: Array(9).fill(null),
         location: Array(2).fill(null),
       }],
-      stepNumber: 0,
-      xIsNext: true,
-      ascending: true,
+      stepNumber: 0, 
+      xIsNext: true, // player who is next
+      ascending: true, 
     };
   }
 
+  // handle when player click to square
+  // 
   handleClick(i){
     const history = this.state.history.slice(0, this.state.stepNumber + 1);
     const current = history[history.length - 1];
@@ -66,11 +78,14 @@ class Game extends React.Component {
       return;
     }
 
+    // tick 'x' or 'o' to squares
     if (this.state.xIsNext){
       squares[i] = "X";
     } else{
       squares[i] = "O";
     }
+
+    // update history to state and change player
     this.setState({
       history: history.concat([{
         squares: squares,
@@ -81,6 +96,7 @@ class Game extends React.Component {
     });
   }
 
+  // set stepnumber (for view step), set player who is next
   jumpTo(step){
     this.setState({
       stepNumber: step,
@@ -88,6 +104,7 @@ class Game extends React.Component {
     });
   }
 
+  // sort history
   sortHandleClick(){
     this.setState({
       ascending: !this.state.ascending,
@@ -109,6 +126,7 @@ class Game extends React.Component {
     const winner = calculateWinner(squares);
     const ascending = this.state.ascending;
 
+    // display moves in the past
     const moves = history.map((step, move) => {
       const desc = move ? 
         'go to move #' + move + " at: " + step.location :
@@ -120,6 +138,7 @@ class Game extends React.Component {
         )
     });
 
+    // display status of game: player who is next, winner or draw
     let status;
     if (winner.player){
       status = "Winner: " + winner.player;
@@ -131,6 +150,7 @@ class Game extends React.Component {
       }
     }
 
+    // render
     return (
       <div className="game">
         <div className="game-board">
@@ -141,8 +161,7 @@ class Game extends React.Component {
           />
         </div>
         <div className="game-info">
-        
-          <div className="status">{status}</div>
+        <div className="status">{status}</div>
           <ol>{ascending ? moves : moves.reverse()}</ol>
           <button onClick={() => this.sortHandleClick()}>Toggle Sort Order</button>
         </div>
@@ -163,6 +182,8 @@ function calculateWinner(squares) {
     [0, 4, 8],
     [2, 4, 6],
   ];
+
+  // check is game have winner????
   for (let i = 0; i < lines.length; i++) {
   // lấy từng case. [a,b,c]. nếu squres[a] = s[b] =s[c]; và a đã được đánh dấu => đã tạo đường đường 3 ô -> thằng đó sẽ thắng
   // else => chưa đủ 3 ô => null -> tiếp tục đánh
@@ -177,6 +198,8 @@ function calculateWinner(squares) {
     }
   }
   
+  // if a square in board == null ->> game is continous; 
+  // else -> game is end and draw
   let isDrawa = true;
   for (let i = 0; i < squares.length; i++){
     if (squares[i] === null){
